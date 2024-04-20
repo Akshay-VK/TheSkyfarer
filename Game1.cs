@@ -1,4 +1,5 @@
 ﻿using System;
+using Engine;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,8 +12,11 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     public RenderTarget2D renderTarget;
 
-    public Vector2 screenSize=new(256,192);
+    public Vector2 screenSize=new(480,270);
     public Rectangle windowRect;
+
+    //TESTS
+    public Animation anim;
 
     public Game1()
     {
@@ -23,8 +27,8 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        _graphics.PreferredBackBufferWidth = 768;
-        _graphics.PreferredBackBufferHeight = 576;
+        _graphics.PreferredBackBufferWidth = 960;
+        _graphics.PreferredBackBufferHeight = 540;
         _graphics.ApplyChanges();
 
 
@@ -42,14 +46,29 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
         // TODO: use this.Content to load your game content here
+        Texture2D tex = Content.Load<Texture2D>("adventurer-v1.5-Sheet");
+        anim = new(ref tex, new AnimationFrame[]{
+            new(new(50,37,50,37),1d/6d),
+            new(new(100,37,50,37),1d/6d),
+            new(new(150,37,50,37),1d/6d),
+            new(new(200,37,50,37),1d/6d),
+            new(new(250,37,50,37),1d/6d),
+            new(new(300,37,50,37),1d/6d),
+
+        })
+        {
+            active = true
+        };
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-
+        //480*270
         // TODO: Add your update logic here
+
+        anim.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -60,6 +79,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin();
+        anim.Draw(gameTime,_spriteBatch,new(200,100));
         _spriteBatch.End();
 
         GraphicsDevice.SetRenderTarget(null);
